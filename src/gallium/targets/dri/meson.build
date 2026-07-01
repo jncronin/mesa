@@ -37,7 +37,12 @@ else
   libgallium_name = 'gallium-@0@'.format(meson.project_version())
 endif
 
-libgallium_dri = shared_library(
+if host_machine.system() == 'gkos'
+  libgallium_name = 'gallium'
+  libname_suffix = []
+endif
+
+libgallium_dri = library(
   libgallium_name,
   files('dri_target.c'),
   include_directories : [
