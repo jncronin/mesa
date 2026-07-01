@@ -55,6 +55,11 @@ os_dupfd_cloexec(int fd)
     */
    return dup(fd);
 }
+#elif DETECT_OS_GAMEKID
+int os_dupfd_cloexec(int fd)
+{
+   return dup(fd);
+}
 #else
 int
 os_dupfd_cloexec(int fd)
