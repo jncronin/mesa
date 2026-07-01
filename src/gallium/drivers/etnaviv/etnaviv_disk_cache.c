@@ -37,6 +37,10 @@ etna_disk_cache_init(struct etna_compiler *compiler, const char *renderer)
    if (DBG_ENABLED(ETNA_DBG_NOCACHE))
       return;
 
+#ifdef __GAMEKID__
+   return;
+#endif
+
    const struct build_id_note *note =
          build_id_find_nhdr_for_addr(etna_disk_cache_init);
    assert(note && build_id_length(note) == BUILD_ID_EXPECTED_HASH_LENGTH); /* sha1 */
