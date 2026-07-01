@@ -91,6 +91,11 @@
 #define DETECT_OS_POSIX 1
 #endif
 
+#if defined(__GAMEKID__)
+#define DETECT_OS_GAMEKID 1
+#define DETECT_OS_POSIX 1
+#endif
+
 
 /*
  * Make sure DETECT_OS_* are always defined, so that they can be used with #if
