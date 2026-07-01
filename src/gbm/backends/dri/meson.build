@@ -12,7 +12,7 @@ if with_platform_wayland
   endif
 endif
 
-shared_library(
+library(
   'dri_gbm',
   files('gbm_dri.c', 'gbm_driint.h'),
   include_directories : [inc_gallium, incs_gbm_dri, inc_loader, inc_st_dri, inc_gallium_aux],

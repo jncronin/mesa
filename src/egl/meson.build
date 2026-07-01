@@ -200,7 +200,7 @@ egl_def = custom_target(
   command : gen_vs_module_defs_normal_command,
 )
 
-libegl = shared_library(
+libegl = library(
   egl_lib_name,
   files_egl,
   c_args : [

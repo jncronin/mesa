@@ -22,6 +22,6 @@ libglapi = static_library(
   link_args : [ld_args_gc_sections],
   include_directories : [inc_mesa, inc_src, inc_include],
   dependencies : [dep_thread, idep_mesautil],
-  install : false,
+  install : host_machine.system() == 'gkos',
 )
 libglapi_build_dir = meson.current_build_dir()

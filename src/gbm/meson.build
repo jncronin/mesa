@@ -21,7 +21,7 @@ if with_platform_android and get_option('platform-sdk-version') >= 30
   libgbm_name = 'gbm_mesa'
 endif
 
-libgbm = shared_library(
+libgbm = library(
   libgbm_name,
   files_gbm,
   include_directories : incs_gbm,

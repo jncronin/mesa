@@ -28,5 +28,6 @@ libglapi_bridge = static_library(
   include_directories : [inc_mesa, inc_include, inc_src, inc_gallium],
   c_args : [c_msvc_compat_args, bridge_glapi_args],
   dependencies : [dep_thread, idep_mesautil],
-  build_by_default : false,
+  build_by_default : host_machine.system() == 'gkos',
+  install : host_machine.system() == 'gkos'
 )
