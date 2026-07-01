@@ -146,6 +146,12 @@ with_any_opengl = with_opengl or with_gles1 or with_gles2
 
 system_has_kms_drm = ['openbsd', 'netbsd', 'freebsd', 'gnu/kfreebsd', 'dragonfly', 'linux', 'sunos', 'android', 'managarm'].contains(host_machine.system())
 
+if host_machine.system() == 'gkos'
+  with_opengl = true
+  with_gles1 = false
+  with_gles2 = false
+endif
+
 gallium_drivers = get_option('gallium-drivers')
 if gallium_drivers.contains('auto')
   if system_has_kms_drm
@@ -342,6 +348,10 @@ if with_gallium and system_has_kms_drm
   endif
 endif
 
+if host_machine.system() == 'gkos'
+  with_dri = true
+endif
+
 with_any_broadcom = [
   with_gallium_vc4,
   with_gallium_v3d,
@@ -522,7 +532,7 @@ with_xlib_lease = get_option('xlib-lease') \
   .allowed()
 
 with_egl = get_option('egl') \
-  .require(with_platform_windows or with_platform_haiku or with_dri or with_platform_android, error_message : 'EGL requires DRI, Haiku, Windows or Android') \
+  .require(with_platform_windows or with_platform_haiku or with_dri or with_platform_android or host_machine.system() == 'gkos', error_message : 'EGL requires DRI, Haiku, Windows or Android') \
   .require(with_glx != 'xlib', error_message :'EGL requires DRI, but GLX is being built with xlib support') \
   .disable_auto_if(with_platform_haiku) \
   .allowed()
