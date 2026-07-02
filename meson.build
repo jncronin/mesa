@@ -148,8 +148,8 @@ system_has_kms_drm = ['openbsd', 'netbsd', 'freebsd', 'gnu/kfreebsd', 'dragonfly
 
 if host_machine.system() == 'gkos'
   with_opengl = true
-  with_gles1 = false
-  with_gles2 = false
+  with_gles1 = true
+  with_gles2 = true
 endif
 
 gallium_drivers = get_option('gallium-drivers')
