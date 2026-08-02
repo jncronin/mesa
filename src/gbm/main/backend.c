@@ -58,9 +58,11 @@ static const char *backend_search_path_vars[] = {
 static void
 free_backend_desc(const struct gbm_backend_desc *backend_desc)
 {
+#ifndef __GAMEKID__
    assert(backend_desc->lib);
 
    dlclose(backend_desc->lib);
+#endif
    free((void *)backend_desc->name);
    free((void *)backend_desc);
 }
@@ -106,9 +108,14 @@ backend_create_device(const struct gbm_backend_desc *bd, int fd)
    return dev;
 }
 
+#ifdef __GAMEKID__
+const struct gbm_backend * gbmint_get_backend(const struct gbm_core *gbm_core);
+#endif
+
 static struct gbm_device *
 load_backend_by_name(const char *name, int fd, bool warn_on_fail)
 {
+#ifndef __GAMEKID__
    void *lib = loader_open_driver_lib(name, BACKEND_LIB_SUFFIX,
                                       backend_search_path_vars,
                                       DEFAULT_BACKENDS_PATH,
@@ -116,13 +123,20 @@ load_backend_by_name(const char *name, int fd, bool warn_on_fail)
 
    if (!lib)
       return NULL;
+#else
+   void *lib = NULL;
+#endif
 
    struct gbm_device *dev = NULL;
    struct gbm_backend_desc *backend_desc;
    const struct gbm_backend *gbm_backend;
    GBM_GET_BACKEND_PROC_PTR get_backend;
 
+#ifdef __GAMEKID__
+   get_backend = gbmint_get_backend;
+#else
    get_backend = dlsym(lib, GBM_GET_BACKEND_PROC_NAME);
+#endif
 
    if (!get_backend)
       goto fail;
@@ -141,7 +155,9 @@ load_backend_by_name(const char *name, int fd, bool warn_on_fail)
    return dev;
 
 fail:
+#ifndef __GAMEKID__
    dlclose(lib);
+#endif
    return NULL;
 }
 
