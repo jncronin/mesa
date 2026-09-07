@@ -101,6 +101,10 @@ void v3d_job_add_bo(struct v3d_job *job, struct v3d_bo *bo);
 #define V3D_JOB_MAX_SCISSORS 16
 #define V3D_JOB_MAX_BO_HANDLE_COUNT 2048
 #define V3D_JOB_MAX_BO_REFERENCED_SIZE (768 * 1024 * 1024)
+/* Keeps the amount of queued GPU work in the range where the kernel does not
+ * reset. Less than 500ms of work in a tile.
+ */
+#define V3D_JOB_MAX_DRAW_CALLS_QUEUED 16384
 
 enum v3d_sampler_state_variant {
         V3D_SAMPLER_STATE_BORDER_0000,
@@ -152,15 +156,18 @@ enum v3d_flush_cond {
 
 /* bitmask */
 enum v3d_blitter_op {
-        V3D_SAVE_TEXTURES         = (1u << 1),
-        V3D_SAVE_FRAMEBUFFER      = (1u << 2),
-        V3D_DISABLE_RENDER_COND   = (1u << 3),
+        V3D_SAVE_TEXTURES          = (1u << 1),
+        V3D_SAVE_FRAMEBUFFER       = (1u << 2),
+        V3D_SAVE_FRAGMENT_STATE    = (1u << 3),
+        V3D_SAVE_FRAGMENT_CONSTANT = (1u << 4),
+        V3D_DISABLE_RENDER_COND    = (1u << 5),
 
-        V3D_BLIT          = V3D_SAVE_FRAMEBUFFER | V3D_SAVE_TEXTURES,
-        V3D_BLIT_COND     = V3D_BLIT | V3D_DISABLE_RENDER_COND,
-        V3D_CLEAR         = 0,
-        V3D_CLEAR_COND    = V3D_CLEAR | V3D_DISABLE_RENDER_COND,
-        V3D_CLEAR_SURFACE = V3D_SAVE_FRAMEBUFFER,
+        V3D_BLIT               = V3D_SAVE_FRAMEBUFFER | V3D_SAVE_TEXTURES |
+                                 V3D_SAVE_FRAGMENT_STATE,
+        V3D_BLIT_COND          = V3D_BLIT | V3D_DISABLE_RENDER_COND,
+        V3D_CLEAR              = V3D_SAVE_FRAGMENT_STATE | V3D_SAVE_FRAGMENT_CONSTANT,
+        V3D_CLEAR_COND         = V3D_CLEAR | V3D_DISABLE_RENDER_COND,
+        V3D_CLEAR_SURFACE      = V3D_CLEAR | V3D_SAVE_FRAMEBUFFER,
         V3D_CLEAR_SURFACE_COND = V3D_CLEAR_SURFACE | V3D_DISABLE_RENDER_COND
 };
 
