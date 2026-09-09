@@ -259,30 +259,6 @@ etna_create_sampler_view_desc(struct pipe_context *pctx, struct pipe_resource *p
 
    etna_texture_desc_fill(ctx, sv, res, sv->templ);
 
-   if (rb_swap) {
-      /* Build descriptors 2,3 with native byte order format.
-       * Copy from descriptors 0,1 and patch the CONFIG0 format field. */
-      uint32_t *native = buf + 2 * (TEXTURE_DESC_SIZE / sizeof(uint32_t));
-      memcpy(native, buf, TEXTURE_DESC_SIZE);
-      native[(TEXDESC_CONFIG0) >> 2] = (native[(TEXDESC_CONFIG0) >> 2] &
-                                         ~VIVS_TE_SAMPLER_CONFIG0_FORMAT__MASK) |
-                                        VIVS_TE_SAMPLER_CONFIG0_FORMAT(native_format);
-
-      uint32_t *native_seamless = native + (TEXTURE_DESC_SIZE / sizeof(uint32_t));
-      memcpy(native_seamless, native, TEXTURE_DESC_SIZE);
-      native_seamless[(TEXDESC_CONFIG1) >> 2] |= VIVS_TE_SAMPLER_CONFIG1_SEAMLESS_CUBE_MAP;
-
-      sv->DESC_ADDR[2].bo = etna_buffer_resource(sv->res)->bo;
-      sv->DESC_ADDR[2].offset = suballoc_offset + 2 * TEXTURE_DESC_SIZE;
-      sv->DESC_ADDR[2].flags = ETNA_RELOC_READ;
-
-      sv->DESC_ADDR[3].bo = etna_buffer_resource(sv->res)->bo;
-      sv->DESC_ADDR[3].offset = suballoc_offset + 3 * TEXTURE_DESC_SIZE;
-      sv->DESC_ADDR[3].flags = ETNA_RELOC_READ;
-
-      sv->has_rb_swap = true;
-   }
-
    return &sv->base;
 
 error:
